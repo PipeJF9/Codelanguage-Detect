@@ -61,14 +61,30 @@ def execute_with_docker(filename, extension):
 
 # Main function to handle command-line arguments and execute the appropriate functions
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Uso: python shell.py archivo_fuente")
-        sys.exit(1)
-    
-    file = sys.argv[1]
-    extension, config = detect_language(file)
-    if config:
-        create_dockerfile(file, config)
-        execute_with_docker(file, extension)
-    else:
-        print("No se reconoce la extensión del archivo.")
+        if len(sys.argv) < 2:
+            print("Uso: python shell.py sample/archivo_fuente")
+            sys.exit(1)
+        
+        file = sys.argv[1]
+        if file == "-h" or file == "--help":
+            print("Uso: python shell.py sample/archivo_fuente")
+            sys.exit(0)
+        if file[0:7] != "sample/":
+            print("El archivo debe estar en la carpeta sample/")
+            sys.exit(1)
+        if file == "sample/":
+            print("No se ha especificado un archivo.")
+            sys.exit(1)
+
+        extension, config = detect_language(file)
+        if config:
+            if not os.path.exists(file):
+                print("El archivo no existe.")
+                sys.exit(1)
+            else:
+                create_dockerfile(file, config)
+                execute_with_docker(file, extension)
+        else:
+            print("No se reconoce la extensión del archivo.")
+            print("Las extensiones soportadas son:", ", ".join(IMAGES_SETTINGS.keys()))
+            sys.exit(1)
