@@ -5,23 +5,23 @@ declare -A IMAGES_SETTINGS
 
 # Python settings
 IMAGES_SETTINGS[".py.base_image"]="python:3.10-slim"
-IMAGES_SETTINGS[".py.run_cmd"]='["python3", "/app/{file}"]'
+IMAGES_SETTINGS[".py.run_cmd"]='["python3", "/app/{file_basename}"]'
 
 # C++ settings
 IMAGES_SETTINGS[".cpp.base_image"]="gcc:latest"
-IMAGES_SETTINGS[".cpp.run_cmd"]="g++ -std=c++17 /app/{file} -o /app/program.out && /app/program.out"
+IMAGES_SETTINGS[".cpp.run_cmd"]='["bash", "-c", "g++ -std=c++17 /app/{file_basename} -o /app/program.out && /app/program.out"]'
 
-# Java settings
+# Java settings - Corregido para manejar paquetes Java correctamente
 IMAGES_SETTINGS[".java.base_image"]="openjdk:17-slim"
-IMAGES_SETTINGS[".java.run_cmd"]="javac /app/{file} && java -cp /app {name_without_ext}"
+IMAGES_SETTINGS[".java.run_cmd"]='["bash", "-c", "mkdir -p /app/sample && cp /app/{file_basename} /app/sample/ && cd /app && javac sample/{file_basename} && java sample.{name_without_ext}"]'
 
 # JavaScript settings
 IMAGES_SETTINGS[".js.base_image"]="node:18-slim"
-IMAGES_SETTINGS[".js.run_cmd"]='["node", "/app/{file}"]'
+IMAGES_SETTINGS[".js.run_cmd"]='["node", "/app/{file_basename}"]'
 
 # Ruby settings
 IMAGES_SETTINGS[".rb.base_image"]="ruby:latest"
-IMAGES_SETTINGS[".rb.run_cmd"]="ruby /app/{file}"
+IMAGES_SETTINGS[".rb.run_cmd"]='["ruby", "/app/{file_basename}"]'
 
 # Function to detect the language based on the file extension
 detect_language() {
@@ -55,7 +55,7 @@ create_dockerfile() {
     fi
     
     # Replace placeholders in the run command
-    run_cmd="${run_cmd//\{file\}/$file_basename}"
+    run_cmd="${run_cmd//\{file_basename\}/$file_basename}"
     run_cmd="${run_cmd//\{name_without_ext\}/$name_without_ext}"
     
     # Create Dockerfile
