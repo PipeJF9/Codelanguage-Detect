@@ -13,8 +13,6 @@ Este repositorio contiene un programa en shell de Linux que detecta automáticam
 
 ### Requisitos
 - Docker instalado.
-- Docker Compose instalado.
-- Permisos de ejecución en el script `docker-execute.sh`.
 
 ### Pasos para Ejecutar
 
